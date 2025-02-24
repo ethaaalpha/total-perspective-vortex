@@ -15,11 +15,8 @@ class AbstractSignalAnalyser(ABC):
         """Analyse the passed raw mne data"""
         pass
 
-
-class DiscreteFourierTransform(AbstractSignalAnalyser):
-    def analyse(raw):
-        return super().analyse()
-
+    def show(self):
+        pp.show()
 
 class FastFourierTransform(AbstractSignalAnalyser):
 
@@ -32,6 +29,7 @@ class FastFourierTransform(AbstractSignalAnalyser):
         pp.xlabel("Frequency (Hz)")
         pp.ylabel("Magnitude")
         pp.xlim(0, 40)
+        pp.ylim(0, 0.35)
         pp.title(self.name)
         pp.gcf().canvas.manager.set_window_title("Signal Analysis")
         pp.grid()
@@ -42,5 +40,5 @@ class FastFourierTransform(AbstractSignalAnalyser):
             fourier_frequencies = np.fft.fftfreq(N, 1 / self.sampling_frequency)
 
             # we use abs to compute the imaginary part and real part (cf: magnitude of complex numbers)
-            # we do :N // 2 to only keep positive frequencies due to complex values symmetry
+            # we do use :N // 2 to only keep positive frequencies due to complex values symmetry
             pp.plot(fourier_frequencies[:N // 2], np.abs(fourier_transform[:N // 2]))

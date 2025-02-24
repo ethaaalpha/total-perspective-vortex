@@ -1,27 +1,32 @@
 from mne.io import read_raw_edf
+from mne.io import Raw
 from matplotlib import pyplot as pp
 from preprocessing.signal import FastFourierTransform
+from preprocessing.filter import CutFilter
 import numpy as np
 import os 
 
-def get_all_edf(parent_path: str) -> list:
-    edf_files = list()
-    for file_name in os.listdir(parent_path):
-        path = os.path.join(parent_path, file_name)
-        print(path)
-        if (file_name.endswith(".edf")):
-            edf_files.append(path)
-        elif os.path.isdir(path):
-            edf_files.extend(get_all_edf(path))
-    return edf_files
+person = str(100).zfill(3)
+raws: list[Raw] = [read_raw_edf(f"dataset/S{person}/S{person}R{i:02d}.edf", preload=True) for i in range(1, 15)]
 
-person = str(69).zfill(3)
-raws = [read_raw_edf(f"dataset/S{person}/S{person}R{i:02d}.edf", preload=True) for i in range(1, 15)]
+def show_filter_before_after(raw: Raw):
+    raw_filtered = CutFilter.filter(raw, 0, 30)
 
-for i, raw in enumerate(raws):
-    FastFourierTransform(raw, i).analyse()
+    raw.plot(duration=15, start=0, n_channels=3, scalings={"eeg":"16e-5"}, show=True)
+    raw_filtered.plot(duration=15, start=0, n_channels=3, scalings={"eeg":"16e-5"}, show=True, block=True)
 
-pp.show()
+def runner(raws: list[Raw]):
+    show_filter_before_after(raws[3])
+
+runner(raws)
+
+# for i, item in enumerate(raws):
+    # print(f"simulation {i} --> {str(item.annotations)}")
+# FastFourierTransform(raws[1], "a").analyse()
+# for i, raw in enumerate(raws):
+    # FastFourierTransform(raw, i).analyse()
+
+# pp.show()
 
 # 
 # print(n_entries)

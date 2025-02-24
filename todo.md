@@ -21,10 +21,27 @@ Because the data is a recording, we will need to split the recording every $x$ m
 #### filtering
 For the moment each signal is still unusable. Like every other ML/Deep learning project, we have to filter our data to keep only the one that is essential for us.
 
-As you know we are actually dealing with signals which is a little bit different than handling classic "exel" like dataset. To imagine how we can filter signal you'll have to look a little on how is composed a signal.  
+As you know we are actually dealing with signals which is a little bit different than handling classic "excel" like dataset. To imagine how we can filter signal you'll have to look a little on how is composed a signal.  
 
-We use Digital Fourier Transform because our signal isn't continuous but discrete.  
+A signal is **composed of multiples frequencies**, but when we read the dataset we have everything inside this signal. Our goal is to uncomposed our signal to look where are located the frequencies and remove the over ones to only keep the *"useful" data*.  
 
+To achieve this you can display the decomposition of your signal using Fourier Transform (**please have a look at the links below**).  
+*Fourier Transform algorithm* will give us a function that will take a frequency as an **input an return a amplitude as an output**.
+When the amplitude is *high, it means that there is a frequency* that compose the signal and when amplitude is small or close to zero. It means that, *there is no frequency* from the signal.  
+
+I'll explain it with a scheme :  
+<img src="doc/img/fourier_example.png" width=550>   
+As you can see there, there are some data in our signal starting from 0 to 25 frequencies, with two peaks at 0Hz and 10Hz. But then after 25-30Hz there is no more interesting data.  
+
+
+> [!NOTE]
+> We actually use Discrete Fourier Transform because our signal isn't continuous but discrete.  
+> Integrals won't works
+
+> [!TIP]
+> Fast Fourier Transform (-> numpy.fft) is well optimized version of the algorithm.  
+
+So, after different analysis of different case we can deduce that we only the frequencies from 0 to 30Hz.  
 
 # To look
 - What is EEG data ?
