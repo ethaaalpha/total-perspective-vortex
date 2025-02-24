@@ -12,4 +12,4 @@ class CutFilter(AbstractFilter):
     @classmethod
     def filter(cls, data: Raw, start=0, end=30):
         cpy = data.copy()
-        return cpy.filter(start, end)
+        return cpy.filter(l_freq=start, h_freq=end)

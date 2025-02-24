@@ -4,27 +4,28 @@ from matplotlib import pyplot as pp
 from preprocessing.signal import FastFourierTransform
 from preprocessing.filter import CutFilter
 import numpy as np
-import os 
 
 person = str(100).zfill(3)
 raws: list[Raw] = [read_raw_edf(f"dataset/S{person}/S{person}R{i:02d}.edf", preload=True) for i in range(1, 15)]
 
-def show_filter_before_after(raw: Raw):
+def get_filtered_data(raw: Raw, display=True) -> Raw:
     raw_filtered = CutFilter.filter(raw, 0, 30)
 
-    raw.plot(duration=15, start=0, n_channels=3, scalings={"eeg":"16e-5"}, show=True)
-    raw_filtered.plot(duration=15, start=0, n_channels=3, scalings={"eeg":"16e-5"}, show=True, block=True)
+    if display:
+        raw.plot(duration=15, start=0, n_channels=3, scalings={"eeg":"16e-5"}, show=True)
+        raw_filtered.plot(duration=15, start=0, n_channels=3, scalings={"eeg":"16e-5"}, show=True, block=True)
+    return raw_filtered
+
+def perform_csp(raws: list[Raw]):
+    return
 
 def runner(raws: list[Raw]):
-    show_filter_before_after(raws[3])
+    raws_filtered = [get_filtered_data(raw, False) for raw in raws]
+    perform_csp(raws)
 
 runner(raws)
 
-# for i, item in enumerate(raws):
-    # print(f"simulation {i} --> {str(item.annotations)}")
-# FastFourierTransform(raws[1], "a").analyse()
-# for i, raw in enumerate(raws):
-    # FastFourierTransform(raw, i).analyse()
+
 
 # pp.show()
 

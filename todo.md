@@ -36,12 +36,39 @@ As you can see there, there are some data in our signal starting from 0 to 25 fr
 
 > [!NOTE]
 > We actually use Discrete Fourier Transform because our signal isn't continuous but discrete.  
-> Integrals won't works
+> Integrals won't works.
 
 > [!TIP]
 > Fast Fourier Transform (-> numpy.fft) is well optimized version of the algorithm.  
 
 So, after different analysis of different case we can deduce that we only the frequencies from 0 to 30Hz.  
+
+### dimensionality reduction algorithm
+Since we have filtered our data we can think that we are ready for our classification algorithm!  
+But not already, as you might notice we have reduce the number of frequencies but we still have 64 different electrodes.  
+
+> [!TIP]
+> The number of feature of this dataset is high, cause features = number of electrodes * number of frequencies.
+
+To reduce the number of channels (electrodes) that we will use. We have to look if some of them are correlated or linked.  
+Meaning that if the feature $\alpha$ is growing/decreasing and the feature $\beta$ do the same. We might think of just keeping one of them to reduce useless calculations since they do the same.  
+
+This is the general idea.   
+You could also think of representing a 3D dataset (since we can't go to higher dimension 'visually') inside of a cube. You will have all of the points representing the dataset and the goal is to place yourself where you can have in a "picture" the best representation of the dataset.  
+
+To achieve this concept there are multiples methods as written in the subject, the most adapted to our case is using CSP (*Common Spacial Pattern*).  
+
+#### common spacial pattern (CSP)
+Before looking at the formula, we'll need to break down some basis:
+- variance: a measure of how far a set of numbers is spread out from their average value
+- covariance: a measure that analyse how to variable vary together, indicating whenether they increasing/decreasing in sync
+- eigenvector: a vector that is scaled by a certain value but stay in the same direction
+- eigenvalue: the value which scale the eigenvector
+
+
+> [!IMPORTANT]
+> In some case there are some human interpretation to consider depending the thematics and the concerned features.  
+
 
 # To look
 - What is EEG data ?
