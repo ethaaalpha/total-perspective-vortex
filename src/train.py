@@ -15,9 +15,11 @@ def get_all_edf(parent_path: str) -> list:
 
 # load_file = [read_raw_edf(x) for x in get_all_edf("dataset/")]
 
-raw = read_raw_edf("dataset/files/eegmmidb/1.0.0/S001/S001R01.edf")
-raw.load_data()
-print(raw.ch_names)
-raw.plot(n_channels=2, scalings={"eeg":"3e-4"}, title="non filter", show=True)
-raw.filter(1, 30)
-raw.plot(n_channels=2, scalings={"eeg":"3e-4"}, title="filtered", show=True, block=True)
+raw = read_raw_edf("dataset/S001/S001R01.edf")
+raw_data = np.array(raw.get_data())
+print(raw.info["sfreq"])
+print(np.shape(raw_data[2]))
+# print(raw.ch)
+# raw.plot(n_channels=2, scalings={"eeg":"3e-4"}, title="non filter", show=True)
+# raw.filter(1, 30)
+# raw.plot(n_channels=2, scalings={"eeg":"3e-4"}, title="filtered", show=True, block=True)

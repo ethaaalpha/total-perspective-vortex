@@ -43,3 +43,5 @@ As you know we are actually dealing with signals which is a little bit different
 - [Fourier Transform](https://www.youtube.com/watch?v=spUNpyF58BY)
 - [Complex Numbers](https://www.youtube.com/watch?v=M6o5CRYfNxA)
 - [Linear Algebra & Vectors (&matrix by the way)](https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)
+- [Variance](https://fr.wikipedia.org/wiki/Variance_(math%C3%A9matiques)
+- [CoVariance](https://fr.wikipedia.org/wiki/Covariance)
