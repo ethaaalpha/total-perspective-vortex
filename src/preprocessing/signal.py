@@ -11,7 +11,7 @@ class AbstractSignalAnalyser(ABC):
         """This function is supposed to return the list of frequencies that are inside the passed signal"""
         pass
 
-class FourierTransform(AbstractSignalAnalyser):
+class DiscreteFourierTransform(AbstractSignalAnalyser):
     def analyse(raw):
         return super().analyse()
     

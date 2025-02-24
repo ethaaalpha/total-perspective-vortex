@@ -23,6 +23,8 @@ For the moment each signal is still unusable. Like every other ML/Deep learning 
 
 As you know we are actually dealing with signals which is a little bit different than handling classic "exel" like dataset. To imagine how we can filter signal you'll have to look a little on how is composed a signal.  
 
+We use Digital Fourier Transform because our signal isn't continuous but discrete.  
+
 
 # To look
 - What is EEG data ?
