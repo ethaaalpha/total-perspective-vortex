@@ -65,6 +65,14 @@ Before looking at the formula, we'll need to break down some basis:
 - eigenvector: a vector that is scaled by a certain value but stay in the same direction
 - eigenvalue: the value which scale the eigenvector
 
+The CSP is a form of PCA but where we will look for the covariance matrixes between two classes T1 and T2 (due to the goal of our classification). Then it will determine which features are impacting the most the classification for T1 and T2.
+
+It is really useful for us because it directly optimize the next steps of our pipeline.  
+
+
+
+> [!NOTE]
+> Instead of the PCA that perfom covariance matrixes on all the channels. 
 
 > [!IMPORTANT]
 > In some case there are some human interpretation to consider depending the thematics and the concerned features.  
