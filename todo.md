@@ -85,9 +85,10 @@ Before looking at the formula, we'll need to break down some basis:
 ## Links
 - [DataSet](https://physionet.org/static/published-projects/eegmmidb/eeg-motor-movementimagery-dataset-1.0.0.zip)
 - [MNE Package](https://mne.tools/stable/index.html)
-- [eeg data](https://www.youtube.com/watch?v=B9ti7boa9jc)
+- [eeg data processing](https://www.youtube.com/watch?v=B9ti7boa9jc)
 - [Fourier Transform](https://www.youtube.com/watch?v=spUNpyF58BY)
 - [Complex Numbers](https://www.youtube.com/watch?v=M6o5CRYfNxA)
 - [Linear Algebra & Vectors (&matrix by the way)](https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)
-- [Variance](https://fr.wikipedia.org/wiki/Variance_(math%C3%A9matiques)
+- [Variance](https://fr.wikipedia.org/wiki/Variance_(math%C3%A9matiques))
 - [CoVariance](https://fr.wikipedia.org/wiki/Covariance)
+- [Principal Component Analysis (PCA)](https://www.youtube.com/watch?v=FD4DeN81ODY)
