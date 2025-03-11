@@ -19,7 +19,6 @@ class AbstractSignalAnalyser(ABC):
         pp.show()
 
 class FastFourierTransform(AbstractSignalAnalyser):
-
     def __init__(self, raw, name="FastFourierTransform"):
         self.name = name
         super().__init__(raw)

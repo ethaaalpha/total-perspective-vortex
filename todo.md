@@ -61,14 +61,13 @@ To achieve this concept there are multiples methods as written in the subject, t
 #### common spacial pattern (CSP)
 Before looking at the formula, we'll need to break down some basis:
 - variance: a measure of how far a set of numbers is spread out from their average value
-- covariance: a measure that analyse how to variable vary together, indicating whenether they increasing/decreasing in sync
+- covariance: a measure that analyse how differents variable vary together, indicating whenether they increasing/decreasing in sync
 - eigenvector: a vector that is scaled by a certain value but stay in the same direction
 - eigenvalue: the value which scale the eigenvector
 
 The CSP is a form of PCA but where we will look for the covariance matrixes between two classes T1 and T2 (due to the goal of our classification). Then it will determine which features are impacting the most the classification for T1 and T2.
 
 It is really useful for us because it directly optimize the next steps of our pipeline.  
-
 
 
 > [!NOTE]
