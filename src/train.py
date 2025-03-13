@@ -10,23 +10,26 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 import numpy as np
 import mne
 from collections import Counter
 
 from processing.transformers import CSPTransformer
 
-TASK_1 = [3, 7, 11]
-TASK_2 = [4, 8, 12]
-TASK_3 = [5, 9, 13]
-TASK_4 = [6, 10, 14] 
+# 1 and 2 are baselines
+TASK_1 = [3, 7, 11] # open and close left or right fist
+TASK_2 = [4, 8, 12] # imagine opening and closing left or right fist
+TASK_3 = [5, 9, 13] # open and close both fists or both feet
+TASK_4 = [6, 10, 14] # imagine opening and closing both fists or both feet
+TASK_TEST = [3]
 
-person = str(100).zfill(3)
+person = str(74).zfill(3)
 raws: list[Raw] = [read_raw_edf(f"dataset/S{person}/S{person}R{i:02d}.edf") for i in range(1, 15)] # CSP only works with n >= 2 classes so baseline do not have
-selected_raws = list(raws[i - 1] for i in TASK_1)
+selected_raws = list(raws[i - 1] for i in TASK_2)
 
 def get_filtered_data(raw: Raw, display=True) -> Raw:
-    raw_filtered = CutFilter.filter(raw, 0, 20)
+    raw_filtered = CutFilter.filter(raw, 0, 30)
 
     if display:
         raw.plot(duration=15, start=0, n_channels=3, scalings={"eeg":"16e-5"}, show=True)
@@ -43,8 +46,9 @@ def runner(raws: list[Raw]):
     all_Y = []
 
     for raw in raws_filtered:
-        annotations, _ = mne.events_from_annotations(raw)
-        epochs = mne.Epochs(raw, annotations, tmin=0, tmax=2, baseline=(0,0), preload=True)
+        event_id = {"T1": 1, "T2": 2} # we exclude T0 since it's the "nothing activity"
+        events, _ = mne.events_from_annotations(raw, event_id)
+        epochs = mne.Epochs(raw, events, tmin=0, tmax=2, baseline=(0,0), preload=True)
         X = epochs.get_data() # n_epochs, n_features, n_times
         Y = epochs.events[:, -1]
     
@@ -55,15 +59,13 @@ def runner(raws: list[Raw]):
     all_Y = np.concatenate(all_Y, axis=0)
 
     pipeline = Pipeline([
-        ("csp", CSPTransformer(4)),
-        ("lda", LinearDiscriminantAnalysis(solver="lsqr", shrinkage="auto"))
-        # ("rfc", RandomForestClassifier(random_state=42))
-        # ("svc", SVC(kernel="rbf", random_state=42))
+        ("csp", CSPTransformer(8)),
+        # ("scaler", StandardScaler()),
+        ("svc", SVC(kernel="linear", random_state=42))
+        # ("svc", LinearDiscriminantAnalysis(solver='lsqr', shrinkage='auto'))
     ])
 
-    # fold = ShuffleSplit(10, random_state=42)
-    fold = StratifiedKFold(shuffle=True, random_state=42)
-    # fold = KFold(5, shuffle=True, random_state=42)
+    fold = StratifiedKFold(5, shuffle=True, random_state=42) # to ensure repartition of classes in each fold !
 
     cv_scores = cross_val_score(pipeline, all_X, all_Y, cv=fold, scoring='accuracy')
 
@@ -72,7 +74,7 @@ def runner(raws: list[Raw]):
 
 runner(selected_raws)
 
-# pp.show()
+pp.show()
 
 # 
 # print(n_entries)
