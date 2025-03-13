@@ -28,14 +28,14 @@ class FastFourierTransform(AbstractSignalAnalyser):
         pp.xlabel("Frequency (Hz)")
         pp.ylabel("Magnitude")
         pp.xlim(0, 60)
-        pp.ylim(0, 0.35)
+        pp.ylim(0, 1e-6)
         pp.title(self.name)
         pp.gcf().canvas.manager.set_window_title("Signal Analysis")
         pp.grid()
 
         for signal in self.data:
             N = len(signal)
-            fourier_transform = np.fft.fft(signal)
+            fourier_transform = np.fft.fft(signal) / N # normalization 
             fourier_frequencies = np.fft.fftfreq(N, 1 / self.sampling_frequency)
 
             # we use abs to compute the imaginary part and real part (cf: magnitude of complex numbers)

@@ -1,16 +1,18 @@
 from mne.io import read_raw_edf
 from mne.io import Raw
 from matplotlib import pyplot as pp
-from sklearn.svm import SVC
+from sklearn.svm import SVC, SVR
 from preprocessing.signal import FastFourierTransform
 from preprocessing.filter import CutFilter
 from mne.decoding import CSP
 from sklearn.model_selection import cross_val_score, StratifiedKFold, LeaveOneOut, ShuffleSplit, KFold
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.metrics import accuracy_score
+from sklearn.linear_model import SGDClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.naive_bayes import MultinomialNB
 import numpy as np
 import mne
 from collections import Counter
@@ -24,12 +26,12 @@ TASK_3 = [5, 9, 13] # open and close both fists or both feet
 TASK_4 = [6, 10, 14] # imagine opening and closing both fists or both feet
 TASK_TEST = [3]
 
-person = str(74).zfill(3)
+person = str(45).zfill(3)
 raws: list[Raw] = [read_raw_edf(f"dataset/S{person}/S{person}R{i:02d}.edf") for i in range(1, 15)] # CSP only works with n >= 2 classes so baseline do not have
-selected_raws = list(raws[i - 1] for i in TASK_2)
+selected_raws = list(raws[i - 1] for i in TASK_1)
 
 def get_filtered_data(raw: Raw, display=True) -> Raw:
-    raw_filtered = CutFilter.filter(raw, 0, 30)
+    raw_filtered = CutFilter.filter(raw, 7, 30)
 
     if display:
         raw.plot(duration=15, start=0, n_channels=3, scalings={"eeg":"16e-5"}, show=True)
@@ -39,6 +41,7 @@ def get_filtered_data(raw: Raw, display=True) -> Raw:
 def runner(raws: list[Raw]):
     for raw in raws:
         raw.load_data()
+        # raw.compute_psd().plot(average=True)
         FastFourierTransform(raw).analyse()
     raws_filtered = [get_filtered_data(raw, False) for raw in raws]
 
@@ -51,7 +54,9 @@ def runner(raws: list[Raw]):
         epochs = mne.Epochs(raw, events, tmin=0, tmax=2, baseline=(0,0), preload=True)
         X = epochs.get_data() # n_epochs, n_features, n_times
         Y = epochs.events[:, -1]
-    
+        print(Y)
+        print(X.shape)
+        print(f"la shape {CSPTransformer(14).fit_transform(X, Y).shape}")
         all_X.append(X)
         all_Y.append(Y)
 
@@ -60,8 +65,13 @@ def runner(raws: list[Raw]):
 
     pipeline = Pipeline([
         ("csp", CSPTransformer(8)),
-        # ("scaler", StandardScaler()),
-        ("svc", SVC(kernel="linear", random_state=42))
+        # ("standard", MinMaxScaler()),
+        ("scaler", StandardScaler()),
+        # ("rfc", MultinomialNB())
+        # ("rfc", SGDClassifier(random_state=42))
+        ("gbc", GradientBoostingClassifier(n_estimators=100, random_state=42, learning_rate=0.0001))
+        # ("rfc", RandomForestClassifier(n_estimators=100, random_state=42))
+        # ("svc", SVC(kernel="linear", random_state=42))
         # ("svc", LinearDiscriminantAnalysis(solver='lsqr', shrinkage='auto'))
     ])
 
@@ -74,7 +84,7 @@ def runner(raws: list[Raw]):
 
 runner(selected_raws)
 
-pp.show()
+# pp.show()
 
 # 
 # print(n_entries)
