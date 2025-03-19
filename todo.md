@@ -23,7 +23,7 @@ For the moment each signal is still unusable. Like every other ML/Deep learning 
 
 As you know we are actually dealing with signals which is a little bit different than handling classic "excel" like dataset. To imagine how we can filter signal you'll have to look a little on how is composed a signal.  
 
-A signal is **composed of multiples frequencies**, but when we read the dataset we have everything inside this signal. Our goal is to uncomposed our signal to look where are located the frequencies and remove the over ones to only keep the *"useful" data*.  
+A signal is **composed of multiples frequencies**, but when we read the dataset we have everything inside this signal. Our goal is to uncomposed our signal to look where are located the frequencies and only keep the *"useful"* ones.  
 
 To achieve this you can display the decomposition of your signal using Fourier Transform (**please have a look at the links below**).  
 *Fourier Transform algorithm* will give us a function that will take a frequency as an **input an return a amplitude as an output**.
@@ -61,14 +61,13 @@ To achieve this concept there are multiples methods as written in the subject, t
 #### common spacial pattern (CSP)
 Before looking at the formula, we'll need to break down some basis:
 - variance: a measure of how far a set of numbers is spread out from their average value
-- covariance: a measure that analyse how differents variable vary together, indicating whenether they increasing/decreasing in sync
+- covariance: a measure that analyse how differents variables vary together, indicating whenether they increasing/decreasing in sync
 - eigenvector: a vector that is scaled by a certain value but stay in the same direction
 - eigenvalue: the value which scale the eigenvector
 
 The CSP is a form of PCA but where we will look for the covariance matrixes between two classes T1 and T2 (due to the goal of our classification). Then it will determine which features are impacting the most the classification for T1 and T2.
 
 It is really useful for us because it directly optimize the next steps of our pipeline.  
-
 
 > [!NOTE]
 > Instead of the PCA that perfom covariance matrixes on all the channels. 
