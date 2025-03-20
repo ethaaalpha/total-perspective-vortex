@@ -26,7 +26,7 @@ def visualize(args):
 # [visualize] [dataset] [subject] [task] --only=[fourier, standard, filter]
 
 def main():
-    parser = argparse.ArgumentParser("total-perspective-vorte", "EEG signal classification using scikitlearn.", "This program was developed in the case of a 42 school project.")
+    parser = argparse.ArgumentParser("total-perspective-vortex.py", description="EEG signal classification using scikitlearn. This program was developed in the case of a 42 school project.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     parser_train = subparsers.add_parser("train", help="Train the model.")
