@@ -2,6 +2,7 @@ import argparse
 from argparse import Namespace
 from src.visualize import show_fourrier, show_standard, show_filter
 from src.train import do_training
+from src.predict import do_prediction
 from src.preprocessing.dataset import DatasetImporter
 from matplotlib import pyplot as pp
 import mne
@@ -20,10 +21,12 @@ only_arg = "fourier: result of fourier transform, standard: the raw visualizatio
 def train(args: Namespace):
     raws = DatasetImporter(args.dataset).get_experience(args.subject, args.experience)
 
-    do_training(raws)
+    do_training(raws, args.output)
 
 def predict(args: Namespace):
-    print("predict" + str(args))
+    raws = DatasetImporter(args.dataset).get_experience(args.subject, args.experience)
+
+    do_prediction(raws, args.model)
 
 def visualize(args: Namespace):
     raw = DatasetImporter(args.dataset).get_task(args.subject, args.task)
@@ -58,7 +61,7 @@ def main():
     parser_train.add_argument("dataset", help=dataset_arg)
     parser_train.add_argument("subject", help=subject_arg, type=int)
     parser_train.add_argument("experience", help=experience_arg, type=int, choices=experience_choices)
-    parser_train.add_argument("--output-dir", default="model.json", help="The output file where the dataset will be stored.")
+    parser_train.add_argument("--output", default="model.json", help="The output file where the dataset will be stored.")
     parser_train.set_defaults(func=train)
 
     parser_predict = subparsers.add_parser("predict", help="Use a trained model.")

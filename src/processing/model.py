@@ -20,7 +20,7 @@ class AbstractModel(ABC):
         pass
 
     @abstractmethod 
-    def fit(self, random_state=42):
+    def fit(self, random_state=42) -> tuple:
         """Model learning, should return the cross_val_score result function"""
         pass
 
@@ -50,7 +50,7 @@ class DefaultModel(AbstractModel):
 
         fold = StratifiedKFold(5, shuffle=True, random_state=random_state)
 
-        return cross_val_score(pipeline,
+        return (cross_val_score(pipeline,
             self.prepared_X, 
             self.prepared_Y, 
-            cv=fold, scoring="accuracy")
+            cv=fold, scoring="accuracy"))
