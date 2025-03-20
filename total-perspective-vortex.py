@@ -7,7 +7,9 @@ from src.preprocessing.dataset import DatasetImporter
 from matplotlib import pyplot as pp
 import mne
 
-dataset_arg = "The dataset folder which contains every subjects (or the needed ones). The expected structure is dataset/S00X/S00XR0Y.edf with X as the subject number and Y the task number."
+dataset_arg = """The dataset folder which contains every subjects (or the needed ones). 
+The expected structure is dataset/S00X/S00XR0Y.edf with X as the subject number and Y the task number.
+If the directory provided is empty a default physionet dataset will be used."""
 subject_arg = "The subject to use represented by X."
 experience_arg = """The experience possibilies are a combination of multiples tasks Y.
 T1=[3, 7, 11](open and close left or right fist),

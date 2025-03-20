@@ -2,6 +2,7 @@ from mne.io.edf import read_raw_edf
 from mne.io import Raw
 from mne.datasets.eegbci import load_data, standardize
 from mne.channels import make_standard_montage, get_builtin_montages
+from pathlib import Path
 import os
 
 class DatasetImporter():
@@ -12,7 +13,7 @@ class DatasetImporter():
     choices = [EXP_1, EXP_2, EXP_3, EXP_4]
 
     def __init__(self, folder_path):
-        self.folder_path = os.path.dirname(folder_path)
+        self.folder_path = str(Path(folder_path).resolve())
 
     def get_subject(self, subject) -> list[Raw]:
         """Return all tasks from 1-14 of a subject"""
