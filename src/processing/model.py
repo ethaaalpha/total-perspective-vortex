@@ -1,35 +1,10 @@
-from abc import ABC, abstractmethod
 from mne.io import Raw
-from mne import events_from_annotations
-from mne import Epochs
-from sklearn.discriminant_analysis import StandardScaler
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.model_selection import BaseCrossValidator, StratifiedKFold, cross_val_score
-from sklearn.pipeline import Pipeline
+from mne import events_from_annotations, Epochs
+from sklearn.model_selection import cross_val_score
+from src.processing.config import Config
 from src.preprocessing.filter import CutFilter
-from src.processing.transformers import CSPTransformer
 import pickle
 import numpy as np
-
-class AbstractConfig(ABC):
-    @abstractmethod
-    def pipeline(self) -> Pipeline:
-        pass
-
-    @abstractmethod
-    def cross_validator(self) -> BaseCrossValidator:
-        pass
-
-class DefaultConfig(AbstractConfig):
-    def pipeline(self):
-        return Pipeline([
-            ("csp", CSPTransformer(6)),
-            ("scaler", StandardScaler()),
-            ("gbc", GradientBoostingClassifier(random_state=42))
-        ])
-
-    def cross_validator(self):
-        return StratifiedKFold(5, shuffle=True, random_state=42)
 
 class Model():
     def ensure_config(func):
@@ -43,20 +18,28 @@ class Model():
     def train(self, raws):
         X, Y = self.__preprocess(raws)
 
-        return cross_val_score(self.config.pipeline(), X, Y, 
-            cv=self.config.cross_validator(), scoring="accuracy")
+        self.config.pipeline.fit(X, Y)
+    
+    @ensure_config
+    def evaluate(self, raws):
+        X, Y = self.__preprocess(raws)
+
+        return cross_val_score(self.config.pipeline, X, Y, cv=self.config.cross_validator, scoring="accuracy")
 
     @ensure_config
     def predict(self, raws):
         X, Y = self.__preprocess(raws)
+
+        print(self.config.pipeline.predict(X))
+        print(Y)
 
     @ensure_config
     def save(self, filepath):
         with open(filepath, "wb") as file:
             pickle.dump(self.config, file)
 
-    def load(self, to_load: AbstractConfig):
-        self.config = to_load
+    def load(self, config: Config):
+        self.config = config
 
     def __preprocess(self, raws: list[Raw]) -> tuple[np.ndarray, np.ndarray]:
         all_X = []

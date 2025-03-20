@@ -18,6 +18,7 @@ T3=[5, 9, 13](open and close both fists or both feet),
 T4=[6, 10, 14](imagine opening and closing both fists or both feet)"""
 experience_choices = [1, 2, 3 ,4]
 task_arg = "The task Y to visualize."
+task_choices = [i for i in range(1, 15)]
 only_arg = "fourier: result of fourier transform, standard: the raw visualization of the dataset, filter: before and after filtering (keeping only 0-30hz freqs)."
 
 def train(args: Namespace):
@@ -26,9 +27,9 @@ def train(args: Namespace):
     do_training(raws, args.output)
 
 def predict(args: Namespace):
-    raws = DatasetImporter(args.dataset).get_experience(args.subject, args.experience)
+    raw = DatasetImporter(args.dataset).get_task(args.subject, args.task)
 
-    do_prediction(raws, args.model)
+    do_prediction([raw], args.model)
 
 def visualize(args: Namespace):
     raw = DatasetImporter(args.dataset).get_task(args.subject, args.task)
@@ -70,13 +71,13 @@ def main():
     parser_predict.add_argument("model", help="The model file to use.")
     parser_predict.add_argument("dataset", help=dataset_arg)
     parser_predict.add_argument("subject", help=subject_arg, type=int)
-    parser_predict.add_argument("experience", help=experience_arg, type=int, choices=experience_choices)
+    parser_predict.add_argument("task", help=task_arg, type=int, choices=task_choices)
     parser_predict.set_defaults(func=predict)
 
     parser_visualize = subparsers.add_parser("visualize", help="Vizualise EEG data specific subject task.")
     parser_visualize.add_argument("dataset", help=dataset_arg)
     parser_visualize.add_argument("subject", help=subject_arg, type=int)
-    parser_visualize.add_argument("task", help=task_arg, type=int)
+    parser_visualize.add_argument("task", help=task_arg, type=int, choices=task_choices)
     parser_visualize.add_argument("--only", choices=["fourier", "standard", "filter"], help=only_arg)
     parser_visualize.set_defaults(func=visualize)
 
