@@ -29,27 +29,8 @@ class DatasetImporter():
     
     def __format_data(cls, data: list):
         format = [read_raw_edf(file, preload=True) for file in data]
+
         for raw in format:
             standardize(raw)
             raw.set_montage(make_standard_montage("standard_1005"))
-        original_set = set(format[0].ch_names)
-
-        for possibility in get_builtin_montages():
-            montage_set = set(make_standard_montage(possibility).ch_names)
-
-            print(f"{possibility} = {len(original_set.intersection(montage_set))}")
-        
-        
-
         return format
-
-    # def __load_file(cls, filepath: str):
-    #     if (os.path.exists(filepath)):
-    #         raw = read_raw_edf(filepath, preload=True)
-    #         print(raw.ch_names)
-    #         raw.set_montage(make_standard_montage("standard_1005"))
-    #         raw.plot_sensors(kind="topomap", show_names=True)
-
-    #         return raw
-    #     else:
-    #         raise FileNotFoundError(f"The file {filepath} do not exist!")

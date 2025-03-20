@@ -69,6 +69,10 @@ The CSP is a form of PCA but where we will look for the covariance matrixes betw
 
 It is really useful for us because it directly optimize the next steps of our pipeline.  
 
+expliquer # n_epochs, n_features, n_times que le csp fait perdre une dimension à ça
+
+c'est quoi la baseline
+
 > [!NOTE]
 > Instead of the PCA that perfom covariance matrixes on all the channels. 
 
