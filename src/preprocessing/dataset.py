@@ -1,4 +1,7 @@
 from mne.io.edf import read_raw_edf
+from mne.io import Raw
+from mne.datasets.eegbci import load_data, standardize
+from mne.channels import make_standard_montage, get_builtin_montages
 import os
 
 class DatasetImporter():
@@ -9,27 +12,44 @@ class DatasetImporter():
     choices = [EXP_1, EXP_2, EXP_3, EXP_4]
 
     def __init__(self, folder_path):
-        self.folder_path = folder_path
+        self.folder_path = os.path.dirname(folder_path)
 
-    def get_subject(self, subject):
+    def get_subject(self, subject) -> list[Raw]:
         """Return all tasks from 1-14 of a subject"""
-        return [self.get_task(subject, task) for task in range(1, 15)]
+        return self.__format_data(load_data(subject, [run for run in range(1, 15)], path=self.folder_path))
 
-    def get_experience(self, subject, experience):
-        """Look for variables `EXP_1-4`, experience should be between 1-4"""
-
+    def get_experience(self, subject, experience) -> list[Raw]:
         if (experience > 4 or experience < 1):
             raise IndexError("Please choose an experience in range 1-4!")
         else:
-            return [self.get_task(subject, task) for task in self.choices[experience - 1]]
+            return self.__format_data(load_data(subject, [run for run in self.choices[experience - 1]], path=self.folder_path))
 
-    def get_task(self, subject, task):
-        """struct: **folder_path/S{subject}/S{subject}R{task:02d}.edf**"""
-        path = f"{self.folder_path}/S{subject}/S{subject}R{task:02d}.edf"
-        return self.__load_file(path)
+    def get_task(self, subject, task) -> Raw:
+        return self.__format_data(load_data(subject, task, path=self.folder_path))[0]
+    
+    def __format_data(cls, data: list):
+        format = [read_raw_edf(file, preload=True) for file in data]
+        for raw in format:
+            standardize(raw)
+            raw.set_montage(make_standard_montage("standard_1005"))
+        original_set = set(format[0].ch_names)
 
-    def __load_file(cls, filepath: str):
-        if (os.path.exists(filepath)):
-            return read_raw_edf(filepath)
-        else:
-            raise FileNotFoundError(f"The file {filepath} do not exist!")
+        for possibility in get_builtin_montages():
+            montage_set = set(make_standard_montage(possibility).ch_names)
+
+            print(f"{possibility} = {len(original_set.intersection(montage_set))}")
+        
+        
+
+        return format
+
+    # def __load_file(cls, filepath: str):
+    #     if (os.path.exists(filepath)):
+    #         raw = read_raw_edf(filepath, preload=True)
+    #         print(raw.ch_names)
+    #         raw.set_montage(make_standard_montage("standard_1005"))
+    #         raw.plot_sensors(kind="topomap", show_names=True)
+
+    #         return raw
+    #     else:
+    #         raise FileNotFoundError(f"The file {filepath} do not exist!")

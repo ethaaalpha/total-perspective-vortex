@@ -1,5 +1,8 @@
 import argparse
-from argparse import ArgumentParser
+from argparse import Namespace
+from src.visualize import show_fourrier, show_standard, show_filter
+from src.preprocessing.dataset import DatasetImporter
+from matplotlib import pyplot as pp
 
 dataset_arg = "The dataset folder which contains every subjects (or the needed ones). The expected structure is dataset/S00X/S00XR0Y.edf with X as the subject number and Y the task number."
 subject_arg = "The subject to use represented by X."
@@ -10,16 +13,29 @@ T3=[5, 9, 13](open and close both fists or both feet),
 T4=[6, 10, 14](imagine opening and closing both fists or both feet)"""
 experience_choices = [1, 2, 3 ,4]
 task_arg = "The task Y to visualize."
-only_arg = "fourier: result of fourier transform, standard: the raw visualization of the dataset, filter: before and after filtering."
+only_arg = "fourier: result of fourier transform, standard: the raw visualization of the dataset, filter: before and after filtering (keeping only 0-30hz freqs)."
 
-def train(args):
+def train(args: Namespace):
     print("train" + str(args))
 
-def predict(args):
+def predict(args: Namespace):
     print("predict" + str(args))
 
-def visualize(args):
-    print("visualize" + str(args))
+def visualize(args: Namespace):
+    file = DatasetImporter(args.dataset).get_task(args.subject, args.task)
+
+    functions = {
+        "fourier": show_fourrier,
+        "standard": show_standard,
+        "filter": show_filter
+    }
+
+    if (getattr(args, "only", False)):
+        functions.get(args.only)(file)
+    else:
+        for func in functions.values():
+            func(file)
+    pp.show()
 
 # [train] [dataset] [subject] [experience] --output-dir=model.json
 # [precict] [model] [dataset] [subject] [experience]
@@ -31,7 +47,7 @@ def main():
 
     parser_train = subparsers.add_parser("train", help="Train the model.")
     parser_train.add_argument("dataset", help=dataset_arg)
-    parser_train.add_argument("subject", help=subject_arg)
+    parser_train.add_argument("subject", help=subject_arg, type=int)
     parser_train.add_argument("experience", help=experience_arg, choices=experience_choices)
     parser_train.add_argument("--output-dir", default="model.json", help="The output file where the dataset will be stored.")
     parser_train.set_defaults(func=train)
@@ -39,14 +55,14 @@ def main():
     parser_predict = subparsers.add_parser("predict", help="Use a trained model.")
     parser_predict.add_argument("model", help="The model file to use.")
     parser_predict.add_argument("dataset", help=dataset_arg)
-    parser_predict.add_argument("subject", help=subject_arg)
+    parser_predict.add_argument("subject", help=subject_arg, type=int)
     parser_predict.add_argument("experience", help=experience_arg, choices=experience_choices)
     parser_predict.set_defaults(func=predict)
 
-    parser_visualize = subparsers.add_parser("visualize", help="Vizualise EEG data.")
+    parser_visualize = subparsers.add_parser("visualize", help="Vizualise EEG data specific subject task.")
     parser_visualize.add_argument("dataset", help=dataset_arg)
-    parser_visualize.add_argument("subject", help=subject_arg)
-    parser_visualize.add_argument("task", help=task_arg)
+    parser_visualize.add_argument("subject", help=subject_arg, type=int)
+    parser_visualize.add_argument("task", help=task_arg, type=int)
     parser_visualize.add_argument("--only", choices=["fourier", "standard", "filter"], help=only_arg)
     parser_visualize.set_defaults(func=visualize)
 

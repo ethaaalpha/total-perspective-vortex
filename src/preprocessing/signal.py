@@ -19,7 +19,7 @@ class AbstractSignalAnalyser(ABC):
         pp.show()
 
 class FastFourierTransform(AbstractSignalAnalyser):
-    def __init__(self, raw, name="FastFourierTransform"):
+    def __init__(self, raw, name="FourierTransform - Reimplement"):
         self.name = name
         super().__init__(raw)
 
@@ -27,8 +27,8 @@ class FastFourierTransform(AbstractSignalAnalyser):
         pp.figure()
         pp.xlabel("Frequency (Hz)")
         pp.ylabel("Magnitude")
-        pp.xlim(0, 60)
-        pp.ylim(0, 1e-6)
+        pp.xlim(0, 80)
+        pp.ylim(0, 5e-6)
         pp.title(self.name)
         pp.gcf().canvas.manager.set_window_title("Signal Analysis")
         pp.grid()
