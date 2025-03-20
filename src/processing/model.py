@@ -43,12 +43,12 @@ class DefaultModel(AbstractModel):
 
     def fit(self, random_state=42):
         pipeline = Pipeline([
-            ("csp", CSPTransformer(8)),
+            ("csp", CSPTransformer(6)),
             ("scaler", StandardScaler()),
             ("gbc", GradientBoostingClassifier(random_state=random_state))
         ])
 
-        fold = StratifiedKFold(20, shuffle=True, random_state=random_state)
+        fold = StratifiedKFold(5, shuffle=True, random_state=random_state)
 
         return cross_val_score(pipeline,
             self.prepared_X, 
