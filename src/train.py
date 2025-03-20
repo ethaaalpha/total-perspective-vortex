@@ -9,9 +9,9 @@ def do_training(raws, output_file):
     print(f"Loading model with \n\tpipeline: {config.pipeline}\n\tcross_validator: {config.cross_validator}")
     print("Starting model training.")
 
-    model.train(raws)
+    accuracy = model.train(raws)
+    print(f"Model accuracy {accuracy.mean():02f}", )
     print("Training complete.")
-    print(f"Model accuracy {model.evaluate(raws).mean():02f}%", )
 
     print(f"Saving model into {output_file}")
     model.save(output_file)

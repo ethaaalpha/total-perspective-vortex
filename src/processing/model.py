@@ -1,6 +1,6 @@
 from mne.io import Raw
 from mne import events_from_annotations, Epochs
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import cross_val_score, train_test_split
 from src.processing.config import Config
 from src.preprocessing.filter import CutFilter
 import pickle
@@ -17,14 +17,11 @@ class Model():
     @ensure_config
     def train(self, raws):
         X, Y = self.__preprocess(raws)
+        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, stratify=Y, random_state=42)
 
-        self.config.pipeline.fit(X, Y)
-    
-    @ensure_config
-    def evaluate(self, raws):
-        X, Y = self.__preprocess(raws)
-
-        return cross_val_score(self.config.pipeline, X, Y, cv=self.config.cross_validator, scoring="accuracy")
+        self.config.pipeline.fit(X_train, Y_train)
+        print(f"Scoring: {self.config.pipeline.score(X_test, Y_test):02f}")
+        return cross_val_score(self.config.pipeline, X_train, Y_train, cv=self.config.cross_validator, scoring="accuracy")
 
     @ensure_config
     def predict(self, raws):

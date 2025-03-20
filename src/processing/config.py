@@ -1,4 +1,3 @@
-
 from dataclasses import dataclass
 from sklearn.discriminant_analysis import StandardScaler
 from sklearn.ensemble import GradientBoostingClassifier
@@ -15,8 +14,8 @@ def default_config():
     """Generate a default lamda configuration for eeg data."""
     return Config(
         Pipeline([
-            ("csp", CSPTransformer(6)),
+            ("csp", CSPTransformer(8)),
             ("scaler", StandardScaler()),
-            ("gbc", GradientBoostingClassifier(random_state=42))
+            ("gbc", GradientBoostingClassifier(n_estimators=45, random_state=34))
         ]),
-        StratifiedKFold(5, shuffle=True, random_state=42))
+        StratifiedKFold(10, shuffle=True, random_state=34))
