@@ -1,7 +1,6 @@
 from mne.io import Raw
 from src.preprocessing.signal import FastFourierTransform
 from src.preprocessing.filter import CutFilter
-from matplotlib import pyplot as pp
 
 scalings = {"eeg": "3e-4"}
 
@@ -22,4 +21,3 @@ def show_filter(file: Raw):
 
     file.plot(title="Filter - Before", duration=10, n_channels=3, scalings=scalings)
     file_filtered.plot(title="Filter - After", duration=10, n_channels=3, scalings=scalings)
-   
