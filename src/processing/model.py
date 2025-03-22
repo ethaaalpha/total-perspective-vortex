@@ -1,5 +1,6 @@
 from mne.io import Raw
 from mne import events_from_annotations, Epochs
+from sklearn.base import check_is_fitted
 from sklearn.model_selection import cross_val_score, train_test_split
 from src.processing.config import Config
 from src.preprocessing.filter import CutFilter
@@ -16,19 +17,23 @@ class Model():
 
     @ensure_config
     def train(self, raws):
+        """Return cross_val_score and score"""
+        conf = self.config
         X, Y = self.__preprocess(raws)
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, stratify=Y, random_state=42)
 
         self.config.pipeline.fit(X_train, Y_train)
-        print(f"Scoring: {self.config.pipeline.score(X_test, Y_test):02f}")
-        return cross_val_score(self.config.pipeline, X_train, Y_train, cv=self.config.cross_validator, scoring="accuracy")
+        return [
+            cross_val_score(conf.pipeline, X_train, Y_train, cv=conf.cross_validator, scoring="accuracy"), 
+            conf.pipeline.score(X_test, Y_test)
+            ]
 
     @ensure_config
-    def predict(self, raws):
+    def predict(self, raws) -> [tuple[np.ndarray, np.ndarray]]:
+        """Return predicted and real values"""
         X, Y = self.__preprocess(raws)
 
-        print(self.config.pipeline.predict(X))
-        print(Y)
+        return [self.config.pipeline.predict(X), Y]
 
     @ensure_config
     def save(self, filepath):
@@ -46,7 +51,7 @@ class Model():
         for raw in raws:
             raw = CutFilter().filter(raw, 0, 30)
             events, _ = events_from_annotations(raw, events_ids)
-            epochs = Epochs(raw, events, tmin=0, tmax=2, baseline=(1, 1.5))
+            epochs = Epochs(raw, events, tmin=0, tmax=2, baseline=(0, 0))
 
             all_X.append(epochs.get_data())
             all_Y.append(epochs.events[:, -1])

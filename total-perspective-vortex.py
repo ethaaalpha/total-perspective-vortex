@@ -1,11 +1,12 @@
-import argparse
 from argparse import Namespace
 from src.visualize import show_fourrier, show_standard, show_filter
-from src.train import do_training
+from src.train import do_training, do_training_all
 from src.predict import do_prediction
 from src.preprocessing.dataset import DatasetImporter
 from matplotlib import pyplot as pp
+import argparse
 import mne
+import numpy as np
 
 dataset_arg = """The dataset folder which contains every subjects (or the needed ones). 
 The expected structure is dataset/S00X/S00XR0Y.edf with X as the subject number and Y the task number.
@@ -15,8 +16,10 @@ experience_arg = """The experience possibilies are a combination of multiples ta
 T1=[3, 7, 11](open and close left or right fist),
 T2=[4, 8, 12](imagine opening and closing left or right fist),
 T3=[5, 9, 13](open and close both fists or both feet),
-T4=[6, 10, 14](imagine opening and closing both fists or both feet)"""
-experience_choices = [1, 2, 3 ,4]
+T4=[6, 10, 14](imagine opening and closing both fists or both feet)
+T5=[T1, T2]
+T6=[T3, T4]"""
+experience_choices = [1, 2, 3, 4, 5, 6]
 task_arg = "The task Y to visualize."
 task_choices = [i for i in range(1, 15)]
 only_arg = "fourier: result of fourier transform, standard: the raw visualization of the dataset, filter: before and after filtering (keeping only 0-30hz freqs)."
@@ -47,6 +50,19 @@ def visualize(args: Namespace):
             func(raw)
     pp.show()
 
+def all(args: Namespace):
+    importer = DatasetImporter(args.dataset)
+    max_subjects=10
+    experiences_acc = []
+
+    for experience, _ in enumerate(importer.choices):
+        print(f"Loading experience {experience} for {max_subjects} subjects.")
+        experience_all = [importer.get_experience(subj, experience + 1) for subj in range (1, max_subjects)]
+        experiences_acc.append(do_training_all(experience_all, experience))
+    print(experiences_acc)
+    print(np.mean(experiences_acc))
+        
+
 def define_verbose(debug: bool):
     if not debug:
         mne.set_log_level("CRITICAL")
@@ -54,6 +70,7 @@ def define_verbose(debug: bool):
 # [train] [dataset] [subject] [experience] --output-dir=model.json
 # [precict] [model] [dataset] [subject] [experience]
 # [visualize] [dataset] [subject] [task] --only=[fourier, standard, filter]
+# [all] [dataset]
 
 def main():
     parser = argparse.ArgumentParser("total-perspective-vortex.py", description="EEG signal classification using scikitlearn. This program was developed in the case of a 42 school project.")
@@ -80,6 +97,10 @@ def main():
     parser_visualize.add_argument("task", help=task_arg, type=int, choices=task_choices)
     parser_visualize.add_argument("--only", choices=["fourier", "standard", "filter"], help=only_arg)
     parser_visualize.set_defaults(func=visualize)
+
+    parser_all = subparsers.add_parser("all", help="Perfom the mean accuracy test on the whole dataset (may be long).")
+    parser_all.add_argument("dataset", help=dataset_arg)
+    parser_all.set_defaults(func=all)
 
     result = parser.parse_args()
     define_verbose(result.debug)
