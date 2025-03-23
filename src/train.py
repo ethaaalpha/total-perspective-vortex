@@ -1,4 +1,4 @@
-from src.processing.config import default_config
+from src.processing.config import default_config, bis_config
 from src.processing.model import Model
 import numpy as np
 
@@ -21,11 +21,11 @@ def do_training(raws, output_file):
 def do_training_all(subjects, experiment):
     model = Model()
     acc_historic = []
-    config = default_config()
+    config = bis_config()
     
     model.load(config)
     for i, subject in enumerate(subjects):
         accuracy, _ = model.train(subject)
         acc_historic.append(accuracy.mean())
-        print(f"experiment {experiment:02d}: subject {i + 1:03d}: accuracy {accuracy.mean():.2f}")
+        print(f"experiment {experiment + 1:02d}: subject {i + 1:03d}: accuracy {accuracy.mean():.2f}")
     return np.mean(acc_historic)

@@ -52,14 +52,17 @@ def visualize(args: Namespace):
 
 def all(args: Namespace):
     importer = DatasetImporter(args.dataset)
-    max_subjects=10
+    max_subjects=110
     experiences_acc = []
 
     for experience, _ in enumerate(importer.choices):
         print(f"Loading experience {experience} for {max_subjects} subjects.")
         experience_all = [importer.get_experience(subj, experience + 1) for subj in range (1, max_subjects)]
         experiences_acc.append(do_training_all(experience_all, experience))
-    print(experiences_acc)
+
+    for i, exp in enumerate(experiences_acc):
+        print(f"experience {i}: {float(exp):.02f}")
+    # print(experiences_acc)
     print(np.mean(experiences_acc))
         
 

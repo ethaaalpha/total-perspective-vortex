@@ -30,7 +30,7 @@ class DatasetImporter():
         return self.__format_data(load_data(subject, task, path=self.folder_path))[0]
     
     def __format_data(cls, data: list):
-        format = [read_raw_edf(file, preload=True) for file in data]
+        format = [read_raw_edf(file, preload=False) for file in data]
 
         for raw in format:
             standardize(raw)

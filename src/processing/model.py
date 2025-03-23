@@ -49,7 +49,8 @@ class Model():
         events_ids = {"T1": 1, "T2": 2} # exclude T0
 
         for raw in raws:
-            raw = CutFilter().filter(raw, 0, 30)
+            raw.load_data()
+            raw = CutFilter().filter(raw, 7, 30)
             events, _ = events_from_annotations(raw, events_ids)
             epochs = Epochs(raw, events, tmin=0, tmax=2, baseline=(0, 0))
 
