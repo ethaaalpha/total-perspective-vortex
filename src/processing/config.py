@@ -28,11 +28,11 @@ def default_config(seed = 42):
         ]),
         KFold(5, shuffle=True, random_state=seed))
 
-def bis_config(seed = 42):
+def bis_config():
     """Generate a default lamda configuration for eeg data."""
     return Config(
         Pipeline([
             ("csp", CSPTransformer(4)),
             ("lda", LinearDiscriminantAnalysis()),
         ]),
-        ShuffleSplit(10, test_size=0.2, random_state=seed))
+        ShuffleSplit(10, test_size=0.2))

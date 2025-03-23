@@ -3,8 +3,6 @@ from mne.io import Raw
 from mne.datasets.eegbci import load_data, standardize
 from mne.channels import make_standard_montage
 from pathlib import Path
-from threading import Thread
-from queue import Queue
 
 class DatasetImporter():
     EXP_1 = [3, 7, 11]
@@ -26,29 +24,15 @@ class DatasetImporter():
         if (experience > 6 or experience < 1):
             raise IndexError("Please choose an experience in range 1-4!")
         else:
-            queue = Queue()
-            threads: list[Thread] = []
-
-            for run in self.choices[experience - 1]:
-                thread = Thread(target=self.__thread_load_data, args=[subject, run, self.folder_path, queue])
-                thread.start()
-                threads.append(thread)
-
-            for t in threads:
-                t.join()
-
-            return self.__format_data([queue.get() for _ in range(queue.qsize())])
+            return self.__format_data(load_data(subject, [run for run in self.choices[experience - 1]], path=self.folder_path))
 
     def get_task(self, subject, task) -> Raw:
         return self.__format_data(load_data(subject, task, path=self.folder_path))[0]
     
     def __format_data(cls, data: list):
-        format = [read_raw_edf(file, preload=False) for file in data]
+        format = [read_raw_edf(file) for file in data]
 
         for raw in format:
             standardize(raw)
             raw.set_montage(make_standard_montage("standard_1005"))
         return format
-
-    def __thread_load_data(cls, subject, task, path, queue):
-        queue.put(load_data(subject, task, path))

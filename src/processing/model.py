@@ -1,6 +1,5 @@
 from mne.io import Raw
 from mne import events_from_annotations, Epochs
-from sklearn.base import check_is_fitted
 from sklearn.model_selection import cross_val_score, train_test_split
 from src.processing.config import Config
 from src.preprocessing.filter import CutFilter
@@ -56,5 +55,9 @@ class Model():
 
             all_X.append(epochs.get_data())
             all_Y.append(epochs.events[:, -1])
+
+            import sys
+            print(f"size of {sys.getsizeof(raw)}", flush=True)
+            print(f"size of  {sys.getsizeof(epochs.get_data())}", flush=True)
 
         return (np.concatenate(all_X, axis=0), np.concatenate(all_Y, axis=0))

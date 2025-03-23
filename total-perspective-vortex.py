@@ -1,6 +1,6 @@
 from argparse import Namespace
 from src.visualize import show_fourrier, show_standard, show_filter
-from src.train import do_training, do_training_all
+from src.train import do_training, do_training_all_multicore
 from src.predict import do_prediction
 from src.preprocessing.dataset import DatasetImporter
 from matplotlib import pyplot as pp
@@ -53,19 +53,9 @@ def visualize(args: Namespace):
 def all(args: Namespace):
     importer = DatasetImporter(args.dataset)
     max_subjects=110
-    experiences_acc = []
 
-    for experience, _ in enumerate(importer.choices):
-        print(f"Loading experience {experience} for {max_subjects} subjects.")
-        experience_all = [importer.get_experience(subj, experience + 1) for subj in range (1, max_subjects)]
-        experiences_acc.append(do_training_all(experience_all, experience))
-
-    for i, exp in enumerate(experiences_acc):
-        print(f"experience {i}: {float(exp):.02f}")
-    # print(experiences_acc)
-    print(np.mean(experiences_acc))
+    do_training_all_multicore(importer, max_subjects)
         
-
 def define_verbose(debug: bool):
     if not debug:
         mne.set_log_level("CRITICAL")
@@ -74,6 +64,7 @@ def define_verbose(debug: bool):
 # [precict] [model] [dataset] [subject] [experience]
 # [visualize] [dataset] [subject] [task] --only=[fourier, standard, filter]
 # [all] [dataset]
+# 225 sec
 
 def main():
     parser = argparse.ArgumentParser("total-perspective-vortex.py", description="EEG signal classification using scikitlearn. This program was developed in the case of a 42 school project.")
