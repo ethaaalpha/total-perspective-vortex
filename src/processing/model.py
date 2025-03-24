@@ -15,16 +15,17 @@ class Model():
         return wrapper
 
     @ensure_config
-    def train(self, raws):
+    def train(self, raws, cv=True):
         """Return cross_val_score and score"""
         conf = self.config
         X, Y = self.__preprocess(raws)
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, stratify=Y, random_state=42)
 
         self.config.pipeline.fit(X_train, Y_train)
+
         return [
             cross_val_score(conf.pipeline, X_train, Y_train, cv=conf.cross_validator, scoring="accuracy"), 
-            conf.pipeline.score(X_test, Y_test)
+            conf.pipeline.score(X_test, Y_test) if cv else 0
             ]
 
     @ensure_config
@@ -51,13 +52,9 @@ class Model():
             raw.load_data()
             raw = CutFilter().filter(raw, 7, 30)
             events, _ = events_from_annotations(raw, events_ids)
-            epochs = Epochs(raw, events, tmin=0, tmax=2, baseline=(0, 0))
+            epochs = Epochs(raw, events, tmin=-1, tmax=4, baseline=None)
 
             all_X.append(epochs.get_data())
             all_Y.append(epochs.events[:, -1])
-
-            import sys
-            print(f"size of {sys.getsizeof(raw)}", flush=True)
-            print(f"size of  {sys.getsizeof(epochs.get_data())}", flush=True)
 
         return (np.concatenate(all_X, axis=0), np.concatenate(all_Y, axis=0))

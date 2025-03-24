@@ -1,12 +1,11 @@
 from argparse import Namespace
 from src.visualize import show_fourrier, show_standard, show_filter
-from src.train import do_training, do_training_all_multicore
+from src.train import do_training, do_training_all
 from src.predict import do_prediction
 from src.preprocessing.dataset import DatasetImporter
 from matplotlib import pyplot as pp
 import argparse
 import mne
-import numpy as np
 
 dataset_arg = """The dataset folder which contains every subjects (or the needed ones). 
 The expected structure is dataset/S00X/S00XR0Y.edf with X as the subject number and Y the task number.
@@ -54,7 +53,7 @@ def all(args: Namespace):
     importer = DatasetImporter(args.dataset)
     max_subjects=110
 
-    do_training_all_multicore(importer, max_subjects)
+    do_training_all(importer, max_subjects)
         
 def define_verbose(debug: bool):
     if not debug:
