@@ -35,6 +35,7 @@ def predict(args: Namespace):
 
 def visualize(args: Namespace):
     raw = DatasetImporter(args.dataset).get_task(args.subject, args.task)
+    raw.load_data()
 
     functions = {
         "fourier": show_fourrier,
