@@ -2,15 +2,20 @@
 set -e
 
 image_docker=physionet
-dataset_docker=dataset
+mne_folder=dataset/MNE-eegbci-data/files/eegmmidb/1.0.0
 
 docker build -t ${image_docker} - <<EOF
 FROM alpine:latest
 
+RUN adduser -D -u $(id -u) -g $(id -g) user
 RUN apk add --no-cache aws-cli
 
-CMD ["aws", "s3", "sync", "--no-sign-request", "s3://physionet-open/eegmmidb/1.0.0/", "/mnt/local/${dataset_docker}"]
+USER user
+WORKDIR /home/user/
+
+CMD ["aws", "s3", "sync", "--no-sign-request", "s3://physionet-open/eegmmidb/1.0.0/", "mount/"]
 EOF
 
-docker run -it --rm --mount type=bind,src=.,target=/mnt/local physionet
+mkdir -p ${mne_folder}
+docker run --rm --user $(id -u):$(id -g) --mount type=bind,src=$(pwd)/${mne_folder},target=/home/user/mount/ physionet
 docker image rm ${image_docker}
