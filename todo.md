@@ -102,3 +102,4 @@ c'est quoi la baseline
 - [Variance](https://fr.wikipedia.org/wiki/Variance_(math%C3%A9matiques))
 - [CoVariance](https://fr.wikipedia.org/wiki/Covariance)
 - [Principal Component Analysis (PCA)](https://www.youtube.com/watch?v=FD4DeN81ODY)
+- [CSP Inrae](https://miat.inrae.fr/site/images/2/2b/MarieChavent.pdf)

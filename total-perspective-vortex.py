@@ -11,20 +11,20 @@ dataset_arg = """The dataset folder which contains every subjects (or the needed
 The expected structure is dataset/S00X/S00XR0Y.edf with X as the subject number and Y the task number.
 If the directory provided is empty a default physionet dataset will be used."""
 subject_arg = "The subject to use represented by X."
-experience_arg = """The experience possibilies are a combination of multiples tasks Y.
+experiment_arg = """The experiment possibilies are a combination of multiples tasks Y.
 T1=[3, 7, 11](open and close left or right fist),
 T2=[4, 8, 12](imagine opening and closing left or right fist),
 T3=[5, 9, 13](open and close both fists or both feet),
 T4=[6, 10, 14](imagine opening and closing both fists or both feet)
 T5=[T1, T2]
 T6=[T3, T4]"""
-experience_choices = [1, 2, 3, 4, 5, 6]
+experiment_choices = [1, 2, 3, 4, 5, 6]
 task_arg = "The task Y to visualize."
 task_choices = [i for i in range(1, 15)]
 only_arg = "fourier: result of fourier transform, standard: the raw visualization of the dataset, filter: before and after filtering (keeping only 0-30hz freqs)."
 
 def train(args: Namespace):
-    raws = DatasetImporter(args.dataset).get_experience(args.subject, args.experience)
+    raws = DatasetImporter(args.dataset).get_experiment(args.subject, args.experiment)
 
     do_training(raws, args.output)
 
@@ -60,8 +60,8 @@ def define_verbose(debug: bool):
     if not debug:
         mne.set_log_level("CRITICAL")
 
-# [train] [dataset] [subject] [experience] --output-dir=model.json
-# [precict] [model] [dataset] [subject] [experience]
+# [train] [dataset] [subject] [experiment] --output-dir=model.json
+# [precict] [model] [dataset] [subject] [experiment]
 # [visualize] [dataset] [subject] [task] --only=[fourier, standard, filter]
 # [all] [dataset]
 # 225 sec
@@ -74,7 +74,7 @@ def main():
     parser_train = subparsers.add_parser("train", help="Train the model.")
     parser_train.add_argument("dataset", help=dataset_arg)
     parser_train.add_argument("subject", help=subject_arg, type=int)
-    parser_train.add_argument("experience", help=experience_arg, type=int, choices=experience_choices)
+    parser_train.add_argument("experiment", help=experiment_arg, type=int, choices=experiment_choices)
     parser_train.add_argument("--output", default="model.json", help="The output file where the dataset will be stored.")
     parser_train.set_defaults(func=train)
 

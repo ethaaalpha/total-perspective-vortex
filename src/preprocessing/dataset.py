@@ -20,11 +20,11 @@ class DatasetImporter():
         """Return all tasks from 1-14 of a subject"""
         return self.__format_data(load_data(subject, [run for run in range(3, 15)], path=self.folder_path))
 
-    def get_experience(self, subject, experience) -> list[Raw]:
-        if (experience > 6 or experience < 1):
-            raise IndexError("Please choose an experience in range 1-46!")
+    def get_experiment(self, subject, experiment) -> list[Raw]:
+        if (experiment > 6 or experiment < 1):
+            raise IndexError("Please choose an experiment in range 1-46!")
         else:
-            return self.__format_data(load_data(subject, [run for run in self.choices[experience - 1]], path=self.folder_path, update_path=True))
+            return self.__format_data(load_data(subject, [run for run in self.choices[experiment - 1]], path=self.folder_path, update_path=True))
 
     def get_task(self, subject, task) -> Raw:
         return self.__format_data(load_data(subject, task, path=self.folder_path))[0]
