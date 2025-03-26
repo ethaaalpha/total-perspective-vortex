@@ -24,14 +24,16 @@ class Model():
 
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, stratify=Y, random_state=24)
 
-        param_grid = {
-                "csp__n_components": randint(2, 42),
-        }
-        grid_search = RandomizedSearchCV(pipeline, param_grid, cv=cv, scoring="accuracy")
-        grid_search.fit(X_train, Y_train)
+        # param_grid = {
+        #     'csp__n_components': [2, 4, 6, 8],
+        #     'lda__shrinkage': [None, 'auto']
+        # }
+        # grid_search = GridSearchCV(pipeline, param_grid, cv=5, scoring="accuracy")
+        # grid_search.fit(X_train, Y_train)
 
-        print(grid_search.best_params_)
-        best_pipeline = grid_search.best_estimator_
+        # print(grid_search.best_params_)
+        # best_pipeline = grid_search.best_estimator_
+        best_pipeline = pipeline
         best_pipeline.fit(X_train, Y_train)
 
         return best_pipeline.score(X_test, Y_test)
@@ -73,7 +75,7 @@ class Model():
             raw.load_data()
             raw = CutFilter().filter(raw, 7, 30)
             events, _ = events_from_annotations(raw, events_ids)
-            epochs = Epochs(raw, events, tmin=-1, tmax=4, baseline=None)
+            epochs = Epochs(raw, events, tmin=0.5, tmax=3, baseline=None)
 
             all_X.append(epochs.get_data(copy=True))
             all_Y.append(epochs.events[:, -1])
