@@ -28,10 +28,10 @@ class Model():
         #     'csp__n_components': [2, 4, 6, 8],
         #     'lda__shrinkage': [None, 'auto']
         # }
-        # grid_search = GridSearchCV(pipeline, param_grid, cv=5, scoring="accuracy")
+        # grid_search = GridSearchCV(pipeline, param_grid, cv=3, scoring="accuracy")
         # grid_search.fit(X_train, Y_train)
 
-        # print(grid_search.best_params_)
+        # # print(grid_search.best_params_)
         # best_pipeline = grid_search.best_estimator_
         best_pipeline = pipeline
         best_pipeline.fit(X_train, Y_train)
@@ -76,8 +76,8 @@ class Model():
             raw = CutFilter().filter(raw, 7, 30)
             events, _ = events_from_annotations(raw, events_ids)
             epochs = Epochs(raw, events, tmin=0.5, tmax=3, baseline=None)
-
-            all_X.append(epochs.get_data(copy=True))
+            all_X.append(epochs.get_data())
             all_Y.append(epochs.events[:, -1])
 
         return (np.concatenate(all_X, axis=0), np.concatenate(all_Y, axis=0))
+
