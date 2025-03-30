@@ -73,6 +73,8 @@ expliquer # n_epochs, n_features, n_times que le csp fait perdre une dimension Ã
 
 c'est quoi la baseline
 
+Generalized eigenvalue problem
+
 > [!NOTE]
 > Instead of the PCA that perfom covariance matrixes on all the channels. 
 
