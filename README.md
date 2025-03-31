@@ -59,7 +59,7 @@ You could also think of representing a 3D dataset (since we can't go to higher d
 To achieve this concept there are multiples methods as written in the subject, the most adapted to our case is using CSP (*Common Spacial Pattern*).  
 
 #### common spacial pattern (CSP)
-Before looking at the formula, we'll need to break down some basis:
+Before looking at the algorithm, we'll need to break down some basis:
 - variance: a measure of how far a set of numbers is spread out from their average value
 - covariance: a measure that analyse how differents variables vary together, indicating whenether they increasing/decreasing in sync
 - eigenvector: a vector that is scaled by a certain value but stay in the same direction
@@ -69,11 +69,10 @@ The CSP is a form of PCA but where we will look for the covariance matrixes betw
 
 It is really useful for us because it directly optimize the next steps of our pipeline.  
 
-expliquer # n_epochs, n_features, n_times que le csp fait perdre une dimension à ça
+To resolve this algorithm we need to solve a **generalized eigenvalue problem** which helps find the filters that maximize a variance for one class and minimize for the others.
+This will helps us emphasize the revelant elements for eachs classes.
 
-c'est quoi la baseline
-
-Generalized eigenvalue problem
+Once we obtain our eigen vectors and associated values we just need to sort them by descending order and return the number of vectors according to the number of components choosen.
 
 > [!NOTE]
 > Instead of the PCA that perfom covariance matrixes on all the channels. 
@@ -81,23 +80,10 @@ Generalized eigenvalue problem
 > [!IMPORTANT]
 > In some case there are some human interpretation to consider depending the thematics and the concerned features.  
 
-
-# To look
-- What is EEG data ?
-    1. Display data with MNE package
-- Dimensionality Reduction Algorithm ?
-- "real time" data stream
-- look for scipy
-
-1. Implementer Preprocessing avec PCA, ICA..
-2. Classicification
-3. Running
-
-
 ## Links
 - [DataSet](https://physionet.org/static/published-projects/eegmmidb/eeg-motor-movementimagery-dataset-1.0.0.zip)
 - [MNE Package](https://mne.tools/stable/index.html)
-- [eeg data processing](https://www.youtube.com/watch?v=B9ti7boa9jc)
+- [Eeg data processing](https://www.youtube.com/watch?v=B9ti7boa9jc)
 - [Fourier Transform](https://www.youtube.com/watch?v=spUNpyF58BY)
 - [Complex Numbers](https://www.youtube.com/watch?v=M6o5CRYfNxA)
 - [Linear Algebra & Vectors (&matrix by the way)](https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)
@@ -105,3 +91,4 @@ Generalized eigenvalue problem
 - [CoVariance](https://fr.wikipedia.org/wiki/Covariance)
 - [Principal Component Analysis (PCA)](https://www.youtube.com/watch?v=FD4DeN81ODY)
 - [CSP Inrae](https://miat.inrae.fr/site/images/2/2b/MarieChavent.pdf)
+- [CSP](https://www.youtube.com/watch?v=zsOULC16USU)

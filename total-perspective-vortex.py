@@ -20,21 +20,23 @@ T5=[T1, T2]
 T6=[T3, T4]"""
 experiment_choices = [1, 2, 3, 4, 5, 6]
 task_arg = "The task Y to visualize."
-task_choices = [i for i in range(1, 15)]
+task_choices = [i for i in range(3, 15)]
 only_arg = "fourier: result of fourier transform, standard: the raw visualization of the dataset, filter: before and after filtering (keeping only 0-30hz freqs)."
 
-def train(args: Namespace):
-    raws = DatasetImporter(args.dataset).get_experiment(args.subject, args.experiment)
+def train(args: Namespace, importer: DatasetImporter):
+    raws = importer.get_experiment(args.subject, args.experiment)
 
+    print(f"Training on subject {args.subject} on experiment {args.experiment} (tasks={importer.choices[args.experiment - 1]})")
     do_training(raws, args.output)
 
-def predict(args: Namespace):
-    raw = DatasetImporter(args.dataset).get_task(args.subject, args.task)
+def predict(args: Namespace, importer: DatasetImporter):
+    raw = importer.get_task(args.subject, args.task)
 
+    print(f"Predicting on subject {args.subject} on task {args.task}")
     do_prediction([raw], args.model)
 
-def visualize(args: Namespace):
-    raw = DatasetImporter(args.dataset).get_task(args.subject, args.task)
+def visualize(args: Namespace, importer: DatasetImporter):
+    raw = importer.get_task(args.subject, args.task)
     raw.load_data()
 
     functions = {
@@ -50,8 +52,7 @@ def visualize(args: Namespace):
             func(raw)
     pp.show()
 
-def all(args: Namespace):
-    importer = DatasetImporter(args.dataset)
+def all(args: Namespace, importer: DatasetImporter):
     max_subjects=110
 
     do_training_all(importer, max_subjects)
@@ -60,19 +61,13 @@ def define_verbose(debug: bool):
     if not debug:
         mne.set_log_level("CRITICAL")
 
-# [train] [dataset] [subject] [experiment] --output-dir=model.json
-# [precict] [model] [dataset] [subject] [experiment]
-# [visualize] [dataset] [subject] [task] --only=[fourier, standard, filter]
-# [all] [dataset]
-# 225 sec
-
 def main():
     parser = argparse.ArgumentParser("total-perspective-vortex.py", description="EEG signal classification using scikitlearn. This program was developed in the case of a 42 school project.")
     parser.add_argument("--debug", action="store_true", help="Active debugging level")
+    parser.add_argument("--dataset", default="dataset", help=dataset_arg)
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     parser_train = subparsers.add_parser("train", help="Train the model.")
-    parser_train.add_argument("dataset", help=dataset_arg)
     parser_train.add_argument("subject", help=subject_arg, type=int)
     parser_train.add_argument("experiment", help=experiment_arg, type=int, choices=experiment_choices)
     parser_train.add_argument("--output", default="model.json", help="The output file where the dataset will be stored.")
@@ -80,26 +75,23 @@ def main():
 
     parser_predict = subparsers.add_parser("predict", help="Use a trained model.")
     parser_predict.add_argument("model", help="The model file to use.")
-    parser_predict.add_argument("dataset", help=dataset_arg)
     parser_predict.add_argument("subject", help=subject_arg, type=int)
     parser_predict.add_argument("task", help=task_arg, type=int, choices=task_choices)
     parser_predict.set_defaults(func=predict)
 
     parser_visualize = subparsers.add_parser("visualize", help="Vizualise EEG data specific subject task.")
-    parser_visualize.add_argument("dataset", help=dataset_arg)
     parser_visualize.add_argument("subject", help=subject_arg, type=int)
     parser_visualize.add_argument("task", help=task_arg, type=int, choices=task_choices)
     parser_visualize.add_argument("--only", choices=["fourier", "standard", "filter"], help=only_arg)
     parser_visualize.set_defaults(func=visualize)
 
     parser_all = subparsers.add_parser("all", help="Perfom the mean accuracy test on the whole dataset (may be long).")
-    parser_all.add_argument("dataset", help=dataset_arg)
     parser_all.set_defaults(func=all)
 
     result = parser.parse_args()
     define_verbose(result.debug)
 
-    result.func(result)
+    result.func(result, DatasetImporter(result.dataset))
 
 if __name__ == "__main__":
     main()
