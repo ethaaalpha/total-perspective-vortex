@@ -11,8 +11,8 @@ def do_training(raws, output_file):
     print(f"Loading model with \n\tpipeline: {config.pipeline}\n\tcross_validator: {config.cross_validator}")
     print("Starting model training.")
 
-    cross = model.cross_validation(raws)
     score = model.train(raws)
+    cross = model.cross_validation(raws)
     print(f"Cross-validation: {cross.round(4)}")
     print(f"Cross-validation accuracy: {cross.mean():.2f}")
     print(f"Model score: {score:.2f}")
