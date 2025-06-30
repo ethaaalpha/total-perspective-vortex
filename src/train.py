@@ -33,8 +33,8 @@ def do_training_all(importer: DatasetImporter, max_subject):
             acc = model.train(data)
             exp_acc_means[exp].append(acc)
 
-            print(f"experiment {exp:02d}: subject {subj+1:03d}: accuracy: {acc:.2f}", flush=True)
+            print(f"accuracy experiment {exp:02d}: subject {subj+1:03d}: accuracy: {acc:.2f}", flush=True)
         
     for k, v in exp_acc_means.items():
         print(f"experiment {k}: {np.mean(v):.02f}", flush=True)
-    print(np.mean([np.mean(v) for v in exp_acc_means.values()]))
+    print(f"Mean accuracy of all experiments: {np.mean([np.mean(v) for v in exp_acc_means.values()]):.3f}")
