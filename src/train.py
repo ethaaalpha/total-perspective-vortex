@@ -1,11 +1,11 @@
 from src.preprocessing.dataset import DatasetImporter
-from src.processing.config import pipeline_ridge
+from src.processing.config import pipeline_tree
 from src.processing.model import Model
 import numpy as np
 
 def do_training(raws, output_file):
     model = Model()
-    config = pipeline_ridge()
+    config = pipeline_tree()
 
     model.load(config)
     print(f"Loading model with \n\tpipeline: {config.pipeline}\n\tcross_validator: {config.cross_validator}")
@@ -28,12 +28,12 @@ def do_training_all(importer: DatasetImporter, max_subject):
         exp_data = [importer.get_experiment(subj, exp) for subj in range (1, max_subject)]
 
         for subj, data in enumerate(exp_data):
-            model = Model().load(pipeline_ridge())
+            model = Model().load(pipeline_tree())
 
-            acc = model.train(data)
+            acc = model.cross_validation(data).mean()
             exp_acc_means[exp].append(acc)
 
-            print(f"accuracy experiment {exp:02d}: subject {subj+1:03d}: accuracy: {acc:.2f}", flush=True)
+            print(f"accuracy experiment {exp:02d}: subject {subj+1:03d}: accuracy: {acc:.2f} mean: {np.mean(exp_acc_means[exp]):.2f}", flush=True)
         
     for k, v in exp_acc_means.items():
         print(f"experiment {k}: {np.mean(v):.02f}", flush=True)

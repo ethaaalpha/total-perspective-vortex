@@ -1,6 +1,6 @@
 from mne.io import Raw
 from src.preprocessing.signal import FastFourierTransform
-from src.preprocessing.filter import CutFilter
+from src.preprocessing.filter import BandPassFilter
 
 scalings = {"eeg": "3e-4"}
 
@@ -17,7 +17,7 @@ def show_standard(file: Raw):
         title="Standard")
 
 def show_filter(file: Raw):
-    file_filtered = CutFilter().filter(file, 9, 25)
+    file_filtered = BandPassFilter().filter(file, 9, 25)
 
     file.plot(title="Filter - Before", duration=10, n_channels=3, scalings=scalings)
     file_filtered.plot(title="Filter - After", duration=10, n_channels=3, scalings=scalings)

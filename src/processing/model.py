@@ -1,8 +1,12 @@
 from mne.io import Raw
 from mne import events_from_annotations, Epochs
-from sklearn.model_selection import cross_val_score, train_test_split
+from mne.preprocessing import ICA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.model_selection import GridSearchCV, cross_val_score, train_test_split
+from sklearn.svm import SVC
 from src.processing.config import Config
-from src.preprocessing.filter import CutFilter
+from src.preprocessing.filter import BandPassFilter
+from mne import pick_types
 import pickle
 import numpy as np
 
@@ -21,6 +25,7 @@ class Model():
         X, Y = self.__preprocess(raws)
 
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, stratify=Y, random_state=24)
+
         pipeline.fit(X_train, Y_train)
 
         return pipeline.score(X_test, Y_test)
@@ -56,14 +61,28 @@ class Model():
     def __preprocess(self, raws: list[Raw]) -> tuple[np.ndarray, np.ndarray]:
         all_X = []
         all_Y = []
-        events_ids = {"T1": 1, "T2": 2} # exclude T0
 
         for raw in raws:
-            raw.load_data()
-            raw = CutFilter().filter(raw, 9, 25)
-            events, _ = events_from_annotations(raw, events_ids)
-            epochs = Epochs(raw, events, tmin=0.5, tmax=3.5, baseline=None)
-            all_X.append(epochs.get_data())
-            all_Y.append(epochs.events[:, -1])
+            # raw.load_data()
 
-        return (np.concatenate(all_X, axis=0), np.concatenate(all_Y, axis=0))
+            print(raw.annotations)
+            raw.annotations.rename(dict(T1="hands", T2="feet"))
+            raw.set_eeg_reference(projection=True)
+            raw.filter(7.0, 30.0, fir_design="firwin", skip_by_annotation="edge")
+            picks = pick_types(raw.info, meg=False, eeg=True, stim=False, eog=False, exclude="bads")
+            
+            epochs = Epochs(
+                raw,
+                event_id=["hands", "feet"],
+                tmin=-1,
+                tmax=4,
+                proj=True,
+                picks=picks,
+                baseline=None,
+                preload=True,
+            )
+            epochs_train = epochs.copy().crop(tmin=1.0, tmax=2.0)
+            labels = epochs.events[:, -1] - 2
+
+
+        return (epochs_train.get_data(copy=False), labels)

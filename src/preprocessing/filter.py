@@ -8,7 +8,7 @@ class AbstractFilter(ABC):
         """Return the data filtered (as a copy, original data is untouched)"""
         pass
 
-class CutFilter(AbstractFilter):
+class BandPassFilter(AbstractFilter):
     @classmethod
     def filter(cls, data: Raw, start=0, end=30):
         cpy = data.copy()
