@@ -1,6 +1,7 @@
 from mne.io import Raw
 from mne import events_from_annotations, Epochs
-from sklearn.model_selection import cross_val_score, train_test_split
+from sklearn.model_selection import GridSearchCV, cross_val_score, train_test_split
+from sklearn.pipeline import Pipeline
 from src.processing.config import Config
 from src.preprocessing.filter import CutFilter
 import pickle
@@ -17,7 +18,8 @@ class Model():
     @ensure_config
     def train(self, raws) -> float:
         """Return training with on  test data (0.2) score"""
-        pipeline = self.config.pipeline
+        pipeline = self._grid_cv(X, Y)
+
         X, Y = self.__preprocess(raws)
 
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, stratify=Y, random_state=24)
@@ -28,14 +30,31 @@ class Model():
     @ensure_config
     def cross_validation(self, raws) -> np.ndarray:
         conf = self.config
+        pipeline = self._grid_cv(X, Y)
+
         X, Y = self.__preprocess(raws)
 
         return cross_val_score(
-            conf.pipeline,
+            pipeline,
             X, Y,
             cv=conf.cross_validator,
             scoring="accuracy"
         )
+
+    @ensure_config
+    def _grid_cv(self, X, Y) -> Pipeline:
+        param_grid = {
+            'csp__n_components': [2, 4, 6, 8],
+        }
+
+        grid = GridSearchCV(
+            self.config.pipeline, 
+            param_grid=param_grid, 
+            cv=self.config.cross_validator, 
+            scoring='accuracy', 
+            n_jobs=-1)
+        grid.fit(X, Y)
+        return grid.best_estimator_
 
     @ensure_config
     def predict(self, raws) -> [tuple[np.ndarray, np.ndarray]]:
@@ -56,7 +75,7 @@ class Model():
     def __preprocess(self, raws: list[Raw]) -> tuple[np.ndarray, np.ndarray]:
         all_X = []
         all_Y = []
-        events_ids = {"T1": 1, "T2": 2} # exclude T0
+        events_ids = {"T1": 1, "T2": 2}
 
         for raw in raws:
             raw.load_data()

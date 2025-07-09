@@ -1,7 +1,10 @@
+from joblib import Parallel, delayed
 from src.preprocessing.dataset import DatasetImporter
-from src.processing.config import pipeline_ridge
+from src.processing.config import pipeline_lda, pipeline_linearsvc, pipeline_ridge
 from src.processing.model import Model
+from src.tool import define_verbose
 import numpy as np
+
 
 def do_training(raws, output_file):
     model = Model()
@@ -23,18 +26,20 @@ def do_training(raws, output_file):
 def do_training_all(importer: DatasetImporter, max_subject):
     exp_acc_means = {i: [] for i in range(1, len(importer.choices) + 1)}
 
+    def train_subject(subj, exp):
+        define_verbose(False)
+
+        data = importer.get_experiment(subj, exp)
+        model = Model().load(pipeline_linearsvc())
+        acc = model.cross_validation(data).mean()
+        print(f"experiment {exp:02d}: subject {subj:03d}: accuracy: {acc:.2f}", flush=True)
+        return acc
+
     for exp in range(1, len(importer.choices) + 1):
-        print(f"loading experiment {exp} all data.")
-        exp_data = [importer.get_experiment(subj, exp) for subj in range (1, max_subject)]
+        print(f"running experiment {exp}")
+        accs = Parallel(n_jobs=-1)(delayed(train_subject)(subj, exp) for subj in range(1, max_subject))
+        exp_acc_means[exp] = accs
 
-        for subj, data in enumerate(exp_data):
-            model = Model().load(pipeline_ridge())
-
-            acc = model.train(data)
-            exp_acc_means[exp].append(acc)
-
-            print(f"accuracy experiment {exp:02d}: subject {subj+1:03d}: accuracy: {acc:.2f}", flush=True)
-        
     for k, v in exp_acc_means.items():
         print(f"experiment {k}: {np.mean(v):.02f}", flush=True)
     print(f"Mean accuracy of all experiments: {np.mean([np.mean(v) for v in exp_acc_means.values()]):.3f}")

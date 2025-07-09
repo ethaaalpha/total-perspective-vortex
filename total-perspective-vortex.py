@@ -4,8 +4,9 @@ from src.train import do_training, do_training_all
 from src.predict import do_prediction
 from src.preprocessing.dataset import DatasetImporter
 from matplotlib import pyplot as pp
+from src.tool import define_verbose
 import argparse
-import mne
+
 
 dataset_arg = """The dataset folder which contains every subjects (or the needed ones). 
 The expected structure is dataset/S00X/S00XR0Y.edf with X as the subject number and Y the task number.
@@ -56,10 +57,6 @@ def all(args: Namespace, importer: DatasetImporter):
     max_subjects=110
 
     do_training_all(importer, max_subjects)
-        
-def define_verbose(debug: bool):
-    if not debug:
-        mne.set_log_level("CRITICAL")
 
 def main():
     parser = argparse.ArgumentParser("total-perspective-vortex.py", description="EEG signal classification using scikitlearn. This program was developed in the case of a 42 school project.")
