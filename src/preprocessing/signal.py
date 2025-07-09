@@ -28,7 +28,7 @@ class FastFourierTransform(AbstractSignalAnalyser):
         pp.xlabel("Frequency (Hz)")
         pp.ylabel("Magnitude")
         pp.xlim(0, 80)
-        pp.ylim(0, 5e-6)
+        pp.ylim(0, 4e-6)
         pp.title(self.name)
         pp.gcf().canvas.manager.set_window_title("Signal Analysis")
         pp.grid()

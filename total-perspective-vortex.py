@@ -1,5 +1,5 @@
 from argparse import Namespace
-from src.visualize import show_fourrier, show_standard, show_filter
+from src.visualize import show_fourrier, show_psd_filter, show_standard, show_filter
 from src.train import do_training, do_training_all
 from src.predict import do_prediction
 from src.preprocessing.dataset import DatasetImporter
@@ -24,6 +24,13 @@ task_arg = "The task Y to visualize."
 task_choices = [i for i in range(3, 15)]
 only_arg = "fourier: result of fourier transform, standard: the raw visualization of the dataset, filter: before and after filtering (keeping only 0-30hz freqs)."
 
+functions = {
+    "fourier": show_fourrier,
+    "standard": show_standard,
+    "filter": show_filter,
+    "psd_filter": show_psd_filter
+}
+
 def train(args: Namespace, importer: DatasetImporter):
     raws = importer.get_experiment(args.subject, args.experiment)
 
@@ -39,12 +46,6 @@ def predict(args: Namespace, importer: DatasetImporter):
 def visualize(args: Namespace, importer: DatasetImporter):
     raw = importer.get_task(args.subject, args.task)
     raw.load_data()
-
-    functions = {
-        "fourier": show_fourrier,
-        "standard": show_standard,
-        "filter": show_filter
-    }
 
     if (getattr(args, "only", False)):
         functions.get(args.only)(raw)
@@ -79,7 +80,7 @@ def main():
     parser_visualize = subparsers.add_parser("visualize", help="Vizualise EEG data specific subject task.")
     parser_visualize.add_argument("subject", help=subject_arg, type=int)
     parser_visualize.add_argument("task", help=task_arg, type=int, choices=task_choices)
-    parser_visualize.add_argument("--only", choices=["fourier", "standard", "filter"], help=only_arg)
+    parser_visualize.add_argument("--only", choices=list(functions.keys()), help=only_arg)
     parser_visualize.set_defaults(func=visualize)
 
     parser_all = subparsers.add_parser("all", help="Perfom the mean accuracy test on the whole dataset (may be long).")
