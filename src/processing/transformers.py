@@ -43,8 +43,8 @@ class CSPCustom(BaseEstimator, TransformerMixin):
         # applying csp filters over each epochs
         X = np.asarray([self.filters_ @ epoch for epoch in X])
 
-        # Computing power signal and emphasize larger signal values
-        # Helps us extract the revelant features from the signal
+        # computing power signal and emphasize larger signal values
+        # helps us extract the revelant features from the signal
         X = (X**2).mean(axis=2)
 
         # standardization of the result

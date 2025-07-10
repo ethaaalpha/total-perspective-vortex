@@ -8,7 +8,7 @@ import numpy as np
 
 def do_training(raws, output_file):
     model = Model()
-    config = pipeline_ridge()
+    config = pipeline_linearsvc()
 
     model.load(config)
     print(f"Loading model with \n\tpipeline: {config.pipeline}\n\tcross_validator: {config.cross_validator}")
