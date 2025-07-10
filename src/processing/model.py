@@ -18,9 +18,9 @@ class Model():
     @ensure_config
     def train(self, raws) -> float:
         """Return training with on  test data (0.2) score"""
-        pipeline = self._grid_cv(X, Y)
-
         X, Y = self.__preprocess(raws)
+
+        pipeline = self._grid_cv(X, Y)
 
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, stratify=Y, random_state=24)
         pipeline.fit(X_train, Y_train)
@@ -30,9 +30,9 @@ class Model():
     @ensure_config
     def cross_validation(self, raws) -> np.ndarray:
         conf = self.config
-        pipeline = self._grid_cv(X, Y)
-
         X, Y = self.__preprocess(raws)
+
+        pipeline = self._grid_cv(X, Y)
 
         return cross_val_score(
             pipeline,
