@@ -14,7 +14,7 @@ matplotlib==3.10.3
 mne==1.9.0
 numpy==2.3.1
 packaging==25.0
-pillow==11.2.1
+pillow==11.3.0
 platformdirs==4.3.8
 pooch==1.8.2
 pyparsing==3.2.3
