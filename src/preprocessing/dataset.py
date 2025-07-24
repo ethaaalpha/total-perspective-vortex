@@ -18,7 +18,7 @@ class DatasetImporter():
 
     def get_subject(self, subject) -> list[Raw]:
         """Return all tasks from 1-14 of a subject"""
-        return self.__format_data(load_data(subject, [run for run in range(3, 15)], path=self.folder_path))
+        return self.__format_data(load_data(subject, [run for run in range(3, 15)], path=self.folder_path, update_path=True))
 
     def get_experiment(self, subject, experiment) -> list[Raw]:
         if (experiment > 6 or experiment < 1):
@@ -27,7 +27,7 @@ class DatasetImporter():
             return self.__format_data(load_data(subject, [run for run in self.choices[experiment - 1]], path=self.folder_path, update_path=True))
 
     def get_task(self, subject, task) -> Raw:
-        return self.__format_data(load_data(subject, task, path=self.folder_path))[0]
+        return self.__format_data(load_data(subject, task, path=self.folder_path, update_path=True))[0]
     
     def __format_data(cls, data: list):
         format = [read_raw_edf(file) for file in data]

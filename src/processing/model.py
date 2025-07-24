@@ -29,21 +29,22 @@ class Model():
         return pipeline.score(X_test, Y_test)
 
     @ensure_config
-    def cross_validation(self, raws) -> np.ndarray:
+    def cross_validation(self, raws, n_jobs=-1) -> np.ndarray:
         conf = self.config
         X, Y = self.__preprocess(raws)
 
-        pipeline = self._grid_cv(X, Y)
+        pipeline = self._grid_cv(X, Y, n_jobs=n_jobs)
 
         return cross_val_score(
             pipeline,
             X, Y,
             cv=conf.cross_validator,
-            scoring="accuracy"
+            scoring="accuracy",
+            n_jobs=n_jobs
         )
 
     @ensure_config
-    def _grid_cv(self, X, Y) -> Pipeline:
+    def _grid_cv(self, X, Y, n_jobs=-1) -> Pipeline:
         param_grid = {
             'csp__n_components': [2, 4, 6, 8],
         }
@@ -53,7 +54,7 @@ class Model():
             param_grid=param_grid, 
             cv=self.config.cross_validator, 
             scoring='accuracy', 
-            n_jobs=-1)
+            n_jobs=n_jobs)
         grid.fit(X, Y)
         return grid.best_estimator_
 

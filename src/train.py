@@ -16,7 +16,7 @@ def do_training(raws, output_file):
     score = model.train(raws)
     cross = model.cross_validation(raws)
     print(f"Cross-validation: {cross.round(4)}")
-    print(f"Cross-validation accuracy: {cross.mean():.2f}")
+    print(f"Cross-validation score: {cross.mean():.2f}")
     print(f"Model score: {score:.2f}")
 
     print(f"Saving model into {output_file}")
@@ -31,7 +31,7 @@ def do_training_all(importer: DatasetImporter, max_subject):
 
         data = importer.get_experiment(subj, exp)
         model = Model().load(pipeline_linearsvc())
-        acc = model.cross_validation(data).mean()
+        acc = model.cross_validation(data, n_jobs=1).mean()
         print(f"experiment {exp:02d}: subject {subj:03d}: accuracy: {acc:.2f}", flush=True)
         return acc
 
