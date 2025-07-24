@@ -68,7 +68,7 @@ def main():
     parser_train = subparsers.add_parser("train", help="Train the model.")
     parser_train.add_argument("subject", help=subject_arg, type=int)
     parser_train.add_argument("experiment", help=experiment_arg, type=int, choices=experiment_choices)
-    parser_train.add_argument("--output", default="model.json", help="The output file where the dataset will be stored.")
+    parser_train.add_argument("--output", default="model.tpv", help="The output file where the model will be stored.")
     parser_train.set_defaults(func=train)
 
     parser_predict = subparsers.add_parser("predict", help="Use a trained model.")
